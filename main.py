@@ -1,32 +1,36 @@
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
-import cx_Oracle
+import oracledb
 
 from schemas.student import CreateStudent, Student
 
 app = FastAPI(title="SUM chiquito")
 
-# Configuracion de base de datos
-db_username = 'g3_dzavala' # Cambian segun su nombre de usuario
-db_password = 'admin' # Contrasena
-db_dsn = cx_Oracle.makedsn('localhost', '1521', 'xe') # Dejar por defecto
-db = cx_Oracle.connect(db_username, db_password, db_dsn)
-cursor = db.cursor()
+conn=oracledb.connect(
+     user="admin",
+     password="GTA-5-elmejor",
+     dsn="kb2tz61mq5de5n4y_low",
+     config_dir="C:/Users/jj-08/Downloads/Wallet_KB2TZ61MQ5DE5N4Y",
+     wallet_location="C:/Users/jj-08/Downloads/Wallet_KB2TZ61MQ5DE5N4Y",
+     wallet_password="GTA-5-elmejor")
+
+cursor = conn.cursor()
 
 router = APIRouter(tags=["Users"])
 
 # Create student
 @router.post("/students/")
-async def create_student(student: CreateStudent):
-    cursor.execute("INSERT INTO students (name, last_name) VALUES (:1, :2)",
-                   (student.name, student.last_name))
-    db.commit()
+async def create_student(student: Student):
+    cursor.execute("INSERT INTO estudiantes (id,nombre, apellido) VALUES (:1, :2, :3)",
+                   (student.id,student.name, student.last_name))
+    conn.commit()
     return {"message": "Student created successfully"}
+
 
 # Read all students
 @router.get("/students/")
 async def read_students():
-    cursor.execute("SELECT id, name, last_name FROM students")
+    cursor.execute("SELECT id,nombre, apellido FROM estudiantes")
     results = cursor.fetchall()
     students = []
     for result in results:
@@ -37,7 +41,7 @@ async def read_students():
 # Read student by id
 @router.get("/students/{student_id}")
 async def read_student(student_id: int):
-    cursor.execute("SELECT id, name, last_name FROM students WHERE id=:1", (student_id,))
+    cursor.execute("SELECT id,nombre, apellido FROM estudiantes WHERE id=:1", (student_id,))
     result = cursor.fetchone()
     if result:
         student = Student(id=result[0], name=result[1], last_name=result[2])
@@ -48,16 +52,16 @@ async def read_student(student_id: int):
 # Update student
 @router.put("/students/{student_id}")
 async def update_student(student_id: int, student: Student):
-    cursor.execute("UPDATE students SET name=:1, last_name=:2 WHERE id=:3",
+    cursor.execute("UPDATE estudiantes SET nombre=:1, apellido=:2 WHERE id=:3",
                    (student.name, student.last_name, student_id))
-    db.commit()
+    conn.commit()
     return {"message": "Student updated successfully"}
 
 # Delete student
 @router.delete("/students/{student_id}")
 async def delete_student(student_id: int):
-    cursor.execute("DELETE FROM students WHERE id=:1", (student_id,))
-    db.commit()
+    cursor.execute("DELETE FROM estudiantes WHERE id=:1", (student_id,))
+    conn.commit()
     return {"message": "Student deleted successfully"}
 
 app.include_router(router)
