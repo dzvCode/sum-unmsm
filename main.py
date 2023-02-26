@@ -1,18 +1,23 @@
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 import oracledb
+from dotenv import load_dotenv
+import os
 
 from schemas.student import CreateStudent, Student
 
 app = FastAPI(title="SUM chiquito")
 
+# Carga las variables de entorno desde el archivo .env
+load_dotenv()
+
 conn=oracledb.connect(
-     user="admin",
-     password="GTA-5-elmejor",
-     dsn="kb2tz61mq5de5n4y_low",
-     config_dir="C:/Users/jj-08/Downloads/Wallet_KB2TZ61MQ5DE5N4Y",
-     wallet_location="C:/Users/jj-08/Downloads/Wallet_KB2TZ61MQ5DE5N4Y",
-     wallet_password="GTA-5-elmejor")
+     user=os.getenv('USER'),
+     password=os.getenv('PASSWORD'),
+     dsn=os.getenv('DSN'),
+     config_dir=os.getenv('CONFIG_DIR'),
+     wallet_location=os.getenv('WALLET_DIR'),
+     wallet_password=os.getenv('WALLET_PASS'))
 
 cursor = conn.cursor()
 
