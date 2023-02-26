@@ -1,7 +1,7 @@
-from fastapi import APIRouter, FastAPI
-from pydantic import BaseModel
-import oracledb
-from dotenv import load_dotenv
+from fastapi import APIRouter, FastAPI #Documentacion
+from pydantic import BaseModel #Validad datos en la DB
+import oracledb #Conección en BD OCI
+from dotenv import load_dotenv #Credenciales
 import os
 
 from schemas.student import CreateStudent, Student
@@ -70,3 +70,5 @@ async def delete_student(student_id: int):
     return {"message": "Student deleted successfully"}
 
 app.include_router(router)
+
+#uvicorn main:app --reload
