@@ -2,3 +2,4 @@ fastapi==0.68.0
 uvicorn==0.15.0
 cx-Oracle==8.2.1
 pydantic==1.9.0
+oracledb==1.2.2
