@@ -4,8 +4,17 @@ from pydantic import BaseModel
 class Student(BaseModel):
     id: int
     name: str
-    last_name: str
+    email: str
+
 
 class CreateStudent(BaseModel):
+    id: int
     name: str
-    last_name:str
+    email: str
+    phone: int
+    id_school: int
+
+class UpdateStudent(BaseModel):
+    name: str
+    email: str
+    phone: int

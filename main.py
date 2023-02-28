@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, FastAPI #Documentacion
 from pydantic import BaseModel #Validad datos en la DB
 import oracledb #Conección en BD OCI
@@ -5,33 +6,21 @@ from dotenv import load_dotenv #Credenciales
 import os
 
 from schemas.student import CreateStudent, Student
+=======
+from fastapi import FastAPI
+from database.connection import get_db_connection
+from routes.base_router import api_router
+>>>>>>> dev
 
 app = FastAPI(title="SUM chiquito")
 
-# Carga las variables de entorno desde el archivo .env
-load_dotenv()
+# # Crear conexión a la base de datos
+# conn = get_db_connection()
 
-conn=oracledb.connect(
-     user=os.getenv('USER'),
-     password=os.getenv('PASSWORD'),
-     dsn=os.getenv('DSN'),
-     config_dir=os.getenv('CONFIG_DIR'),
-     wallet_location=os.getenv('WALLET_DIR'),
-     wallet_password=os.getenv('WALLET_PASS'))
-
-cursor = conn.cursor()
-
-router = APIRouter(tags=["Users"])
-
-# Create student
-@router.post("/students/")
-async def create_student(student: Student):
-    cursor.execute("INSERT INTO estudiantes (id,nombre, apellido) VALUES (:1, :2, :3)",
-                   (student.id,student.name, student.last_name))
-    conn.commit()
-    return {"message": "Student created successfully"}
+# cursor = conn.cursor()
 
 
+<<<<<<< HEAD
 # Read all students
 @router.get("/students/")
 async def read_students():
@@ -72,3 +61,6 @@ async def delete_student(student_id: int):
 app.include_router(router)
 
 #uvicorn main:app --reload
+=======
+app.include_router(api_router)
+>>>>>>> dev
