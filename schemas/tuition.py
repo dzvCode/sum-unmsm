@@ -7,12 +7,12 @@ class Tuition(BaseModel):
     score: float
     date: datetime.date
     
-class Tuition_Update(BaseModel):
+class TuitionUpdate(BaseModel):
     id_student: int
     id_course: int
     score: float
     
-class Tuition_Create(BaseModel):
+class TuitionCreate(BaseModel):
     id_student: int
     id_course: int
     score: float
