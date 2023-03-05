@@ -7,4 +7,8 @@ app = FastAPI(title="SUM Chiquito", description="La API backend realizada con FA
 # conn = get_db_connection()
 
 # cursor = conn.cursor()
+
+
 app.include_router(api_router)
+
+#uvicorn main:app --reload
