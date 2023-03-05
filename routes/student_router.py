@@ -22,7 +22,7 @@ async def create_student(student: CreateStudent):
 # Read all students
 @router.get("/")
 async def read_students():
-    cursor.execute("SELECT id_escuela, nombre_completo, correo FROM estudiantes")
+    cursor.execute("SELECT id_estudiante, nombre_completo, correo FROM estudiantes")
     results = cursor.fetchall()
     students = []
     for result in results:
