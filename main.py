@@ -10,5 +10,3 @@ app = FastAPI(title="SUM Chiquito", description="La API backend realizada con FA
 
 
 app.include_router(api_router)
-
-#uvicorn main:app --reload
