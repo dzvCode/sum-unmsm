@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 
-from schemas.student import CreateStudent, Student, UpdateStudent
+from schemas.student import CreateStudent, Student
 
 router = APIRouter()
 
