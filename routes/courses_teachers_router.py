@@ -12,8 +12,8 @@ cursor = conn.cursor()
 # Create courses_teachers
 @router.post("/")
 async def create_courses_teachers(CT: CT):
-    cursor.execute("INSERT INTO estudiantes (id_curso, id_maestro) VALUES (:1, :2)",
-                   (CT.course, CT.id_teacher))
+    cursor.execute("INSERT INTO cursos_maestros (id_curso, id_maestro, seccion) VALUES (:1, :2, :3)",
+                   (CT.id_course, CT.id_teacher, CT.section))
     conn.commit()
     return {"message": "courses_teachers created successfully"}
 
@@ -21,21 +21,21 @@ async def create_courses_teachers(CT: CT):
 # Read all courses_teacherss
 @router.get("/")
 async def read_courses_teachers():
-    cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros")
+    cursor.execute("SELECT id_curso, id_maestro, seccion FROM cursos_maestros")
     results = cursor.fetchall()
     courses_teachers = []
     for result in results:
-        course_teacher =  CT(id_course=result[0], id_teacher=result[1])
+        course_teacher =  CT(id_course=result[0], id_teacher=result[1], section=result[2])
         courses_teachers.append(course_teacher)
     return courses_teachers
 
 # Read courses_teachers by id
 @router.get("/{course_teacher_information}")
-async def read_courses_teachers_ids(teacher_id: int, course_id:int):
-    cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (teacher_id, course_id,))
+async def read_courses_teachers_ids(teacher_id: int, course_id:str):
+    cursor.execute("SELECT id_curso, id_maestro, seccion FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (teacher_id, course_id))
     result = cursor.fetchone()
     if result:
-        course_teacher =  CT(id_curso=result[0], id_maestro=result[1])
+        course_teacher =  CT(id_course=result[0], id_teacher=result[1], section=result[2])
         return course_teacher
 
     else:
@@ -53,7 +53,7 @@ async def update_courses_teachers(teacher_id: int, course_id:int, CT: CTUpdate):
         return {"error": "courses_teachers not found"}
 
     # Si el estudiante existe, actualizar sus datos en la base de datos
-    cursor.execute("UPDATE courses_teachers SET id_couse=:1, WHERE id_curso =:2 and id_maestro=:3",
+    cursor.execute("UPDATE cursos_maestros SET id_curso=:1, WHERE id_curso =:2 and id_maestro=:3",
                    (CT.id_course, course_id, teacher_id))
     conn.commit()
 
