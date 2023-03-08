@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 from datetime import datetime
-from schemas.tuition import Tuition, TuitionCreate, TuitionUpdate
+from schemas.tuition import Tuition, TuitionCreate, TuitionUpdate,  VW_TuitionAll, VW_TuitionID
 
 router = APIRouter()
 
@@ -10,11 +10,10 @@ router = APIRouter()
 async def create_Tuitions(Tuition: TuitionCreate):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO matriculas (id_curso, id_maestro, nota, fecha) VALUES (:1, :2, :3, :4)",
-                   (Tuition.id_student, Tuition.id_course, Tuition.score, datetime.date.today()))
+    cursor.callproc("PKG_MATRICULAS.SP_MATRICULA_ESTUDIANTE_CURSO", [Tuition.id_student, Tuition.id_course, Tuition.id_teacher, Tuition.section])
     conn.commit()
     conn.close()
-    return {"message": "Tuitions created successfully"}
+    return {"message": "Estudiante Matriculado correctamente"}
 
 
 # Read all courses_teacherss
@@ -22,33 +21,31 @@ async def create_Tuitions(Tuition: TuitionCreate):
 async def read_courses_teacherss():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_maestro, nota, fecha FROM matriculas")
+    cursor.execute("SELECT cod_estudiante, ciclo, cod_curso, asignatura, creditos, seccion, docente FROM vw_matriculas_all")
     results = cursor.fetchall()
     tns = []
     for result in results:
-        tn =  Tuition(id_curso=result[0], id_maestro=result[1], nota=result[2], fecha=result[3])
+        tn =  VW_TuitionAll(cod_estudiante=result[0], ciclo=result[1], cod_curso=result[2], asignatura=result[3], creditos=result[4], seccion=result[5], docente=result[6])
         tns.append(tn)
     conn.close()
     return tns
 
 # Read Tuitions by id
-@router.get("/{Tuition_information}")
-async def read_tuition(student_id: int, curso_id: int):
+@router.get("/{Tuition_information_ByIdStudent}")
+async def read_tuition(student_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_estudiante, nota, fecha FROM matriculas WHERE id_estudiante=:1", (student_id, curso_id,))
-    result = cursor.fetchone()
-    if result:
-        tn =  Tuition(id_course=result[0], id_student=result[1], score=result[2], date=result[3])
-        conn.close()
-        return tn
-
-    else:
-        conn.close()
-        return {"message": "Tuitions not found"}
+    cursor.execute("SELECT ciclo, cod_curso, asignatura, creditos, seccion, docente FROM vw_matriculas_all WHERE cod_estudiante=:1", (student_id,))
+    results = cursor.fetchall()
+    tns = []
+    for result in results:
+        tn =  VW_TuitionID(ciclo=result[0], cod_curso=result[1], asignatura=result[2], creditos=result[3], seccion=result[4], docente=result[5])
+        tns.append(tn)
+    conn.close()
+    return tns
 
 # Update Tuitions
-@router.put("/{courses_teachers_id}")
+@router.put("/{Update_Tuition_ByIdStudent_IdCourse}")
 async def update_courses_teachers(course_id: int, student_id:int, Tuition: TuitionUpdate):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -71,7 +68,7 @@ async def update_courses_teachers(course_id: int, student_id:int, Tuition: Tuiti
 
 
 # Delete Tuitions
-@router.delete("/{courses_teachers_id}")
+@router.delete("/{Delete_Tuition_ByIdStudent_IdCourse}")
 async def delete_tuition(course_id: int, student_id:int):
     conn = get_db_connection()
     cursor = conn.cursor()

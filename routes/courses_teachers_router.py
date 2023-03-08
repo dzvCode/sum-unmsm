@@ -10,7 +10,7 @@ router = APIRouter()
 async def create_courses_teachers(CT: CT):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO estudiantes (id_curso, id_maestro) VALUES (:1, :2)",
+    cursor.execute("INSERT INTO cursos_maestros (id_curso, id_maestro) VALUES (:1, :2)",
                    (CT.course, CT.id_teacher))
     conn.commit()
     conn.close()
@@ -22,11 +22,11 @@ async def create_courses_teachers(CT: CT):
 async def read_courses_teachers():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros")
+    cursor.execute("SELECT id_curso, id_maestro, seccion FROM cursos_maestros")
     results = cursor.fetchall()
     courses_teachers = []
     for result in results:
-        course_teacher =  CT(id_course=result[0], id_teacher=result[1])
+        course_teacher =  CT(id_course=result[0], id_teacher=result[1], section=result[2])
         courses_teachers.append(course_teacher)
     
     conn.close()
@@ -63,7 +63,7 @@ async def update_courses_teachers(teacher_id: int, course_id:int, CT: CTUpdate):
         return {"error": "courses_teachers not found"}
 
     # Si el estudiante existe, actualizar sus datos en la base de datos
-    cursor.execute("UPDATE courses_teachers SET id_couse=:1, WHERE id_curso =:2 and id_maestro=:3",
+    cursor.execute("UPDATE cursos_maestros SET id_curso=:1, WHERE id_curso =:2 and id_maestro=:3",
                    (CT.id_course, course_id, teacher_id))
     conn.commit()
     conn.close()
