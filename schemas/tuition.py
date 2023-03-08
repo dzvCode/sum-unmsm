@@ -33,9 +33,7 @@ class TuitionCreate(BaseModel):
     id_teacher: int
     section: int
     
-class TuitionUpdate(BaseModel):
-    id_student: int
-    id_course: int
-    score: float
+class TuitionUpdateScore(BaseModel):
+    score: int
     
 

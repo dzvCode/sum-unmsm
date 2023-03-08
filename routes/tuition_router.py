@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 from datetime import datetime
-from schemas.tuition import Tuition, TuitionCreate, TuitionUpdate,  VW_TuitionAll, VW_TuitionID
+from schemas.tuition import Tuition, TuitionCreate,  TuitionUpdateScore,  VW_TuitionAll, VW_TuitionID
 
 router = APIRouter()
 
@@ -46,44 +46,43 @@ async def read_tuition(student_id: int):
 
 # Update Tuitions
 @router.put("/{Update_Tuition_ByIdStudent_IdCourse}")
-async def update_courses_teachers(course_id: int, student_id:int, Tuition: TuitionUpdate):
+async def update_courses_teachers(student_id:int, course_id: str, Tuition: TuitionUpdateScore):
     conn = get_db_connection()
     cursor = conn.cursor()
     # Consultar si existe el estudiante con el ID proporcionado
-    cursor.execute("SELECT id_curso, id_estudiante FROM matricula WHERE id_curso=:1 and id_estudiante =:2", (course_id, student_id))
+    cursor.execute("SELECT id_estudiante, id_curso FROM matriculas WHERE id_estudiante =:1 and id_curso=:2", (student_id, course_id))
     result = cursor.fetchone()
 
     # Si no se encuentra el estudiante, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "Tuitions not found"}
+        return {"error": "Matricula del curso no encontrada"}
 
     # Si el estudiante existe, actualizar sus datos en la base de datos
-    cursor.execute("UPDATE matriculas SET nota=:3, fecha=:4 WHERE id_curso=:1 and id_estudiante =:2",
-                   (course_id, student_id, Tuition.score, datetime.date.today()))
+    cursor.execute("UPDATE matriculas SET nota=:1 WHERE id_estudiante=:2 and id_curso=:3", (Tuition.score, student_id, course_id))
     conn.commit()
     conn.close()
 
-    return {"message": "Tuition updated successfully"}
+    return {"message": "La nota del curso con codigo "+course_id+" del alumno con codigo "+str(student_id)+" ha sido actualizada"}
 
 
 # Delete Tuitions
 @router.delete("/{Delete_Tuition_ByIdStudent_IdCourse}")
-async def delete_tuition(course_id: int, student_id:int):
+async def delete_tuition(student_id:int, course_id: str):
     conn = get_db_connection()
     cursor = conn.cursor()
     # Consultar si existe el estudiante con el ID proporcionado
-    cursor.execute("SELECT id_curso, id_estudiante FROM matricula WHERE id_curso=:1 and id_estudiante =:2", (course_id, student_id))
+    cursor.execute("SELECT id_curso, id_estudiante FROM matriculas WHERE id_estudiante = :1 AND id_curso = :2", (student_id, course_id))
     result = cursor.fetchone()
 
     # Si no se encuentra el estudiante, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "Tuitions not found"}
+        return {"error": "Matricula del curso no encontrada"}
 
     # Si el estudiante existe, eliminarlo de la base de datos
-    cursor.execute("DELETE FROM matricula WHERE id_curso=:1 and id_estudiante =:2", (course_id, student_id))
+    cursor.execute("DELETE FROM matriculas WHERE id_estudiante=:1 and id_curso =:2", (student_id, course_id))
     conn.commit()
     conn.close()
 
-    return {"message": "Tuitions deleted successfully"}
+    return {"message": "Matricula al curso con codigo "+course_id+" del alumno con codigo "+str(student_id)+" eliminada"}
