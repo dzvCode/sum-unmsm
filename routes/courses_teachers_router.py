@@ -10,7 +10,7 @@ router = APIRouter()
 async def create_courses_teachers(CT: CT):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO estudiantes (id_curso, id_maestro) VALUES (:1, :2)",
+    cursor.execute("INSERT INTO cursos_maestros (id_curso, id_maestro) VALUES (:1, :2)",
                    (CT.course, CT.id_teacher))
     conn.commit()
     conn.close()
@@ -22,7 +22,7 @@ async def create_courses_teachers(CT: CT):
 async def read_courses_teachers():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros")
+    cursor.execute("SELECT id_curso, id_maestro, seccion FROM cursos_maestros")
     results = cursor.fetchall()
     courses_teachers = []
     for result in results:
