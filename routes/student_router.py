@@ -20,12 +20,12 @@ async def create_student(student: CreateStudent):
 async def read_students():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT ID_ESTUDIANTE, NOMBRE_COMPLETO, CORREO FROM ESTUDIANTES")
+    cursor.execute("SELECT ID_ESTUDIANTE, NOMBRE_COMPLETO, CORREO, TELEFONO, ID_ESCUELA FROM ESTUDIANTES")
     results = cursor.fetchall()
     students = []
 
     for result in results:
-        student = Student(id=result[0], name=result[1], email=result[2])
+        student = CreateStudent(id=result[0], name=result[1], email=result[2], phone=result[3], id_school=result[4])
         students.append(student)
     conn.close()
     return students
