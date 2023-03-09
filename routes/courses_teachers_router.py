@@ -32,21 +32,20 @@ async def read_courses_teachers():
     conn.close()
     return courses_teachers
 
-# Read courses_teachers by id
-@router.get("/{course_teacher_information}")
-async def read_courses_teachers_ids(teacher_id: int, course_id:int):
+# Read courses by id
+@router.get("/get_courses")
+async def read_courses_teachers_ids():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (teacher_id, course_id,))
-    result = cursor.fetchone()
-    if result:
-        course_teacher =  CT(id_curso=result[0], id_maestro=result[1])
-        conn.close()
-        return course_teacher
-
-    else:
-        conn.close()
-        return {"message": "courses_teachers not found"}
+    cursor.execute("SELECT DISTINCT id_curso FROM cursos_maestros")
+    results = cursor.fetchall()
+    courses_teachers = []
+    for result in results:
+        course_teacher =  CTUpdate(id_course=result[0])
+        courses_teachers.append(course_teacher)
+    print(courses_teachers)
+    conn.close()
+    return courses_teachers
 
 # Update courses_teachers
 @router.put("/{courses_teachers_id}")

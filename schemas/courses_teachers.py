@@ -6,7 +6,7 @@ class CT(BaseModel):
     section: int
 
 class CTUpdate(BaseModel):
-    id_course: int
+    id_course: str
   
 
 
