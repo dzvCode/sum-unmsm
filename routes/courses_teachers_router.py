@@ -5,7 +5,7 @@ from schemas.courses_teachers import CT, CTUpdate
 
 router = APIRouter()
 
-# Create courses_teachers
+# Programar un curso
 @router.post("/")
 async def create_courses_teachers(CT: CT):
     conn = get_db_connection()
@@ -17,7 +17,7 @@ async def create_courses_teachers(CT: CT):
     return {"message": "courses_teachers created successfully"}
 
 
-# Read all courses_teacherss
+# Obtener todos los cursos programados
 @router.get("/")
 async def read_courses_teachers():
     conn = get_db_connection()
@@ -32,7 +32,7 @@ async def read_courses_teachers():
     conn.close()
     return courses_teachers
 
-# Read courses by id
+# Obtener los codigos de los cursos distintos
 @router.get("/get_courses")
 async def read_courses_teachers_ids():
     conn = get_db_connection()
@@ -47,7 +47,7 @@ async def read_courses_teachers_ids():
     conn.close()
     return courses_teachers
 
-# Update courses_teachers
+# Actualizar una programacion de cursos
 @router.put("/{courses_teachers_id}")
 async def update_courses_teachers(teacher_id: int, course_id:int, CT: CTUpdate):
     conn = get_db_connection()
@@ -56,36 +56,36 @@ async def update_courses_teachers(teacher_id: int, course_id:int, CT: CTUpdate):
     cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (teacher_id, course_id,))
     result = cursor.fetchone()
 
-    # Si no se encuentra el estudiante, retornar un mensaje de error
+    # Si no encuentra el curso programado con la asignacion del profesor
     if not result:
         conn.close()
-        return {"error": "courses_teachers not found"}
+        return {"error": "Curso programado con el profesor digitado no encontrado"}
 
-    # Si el estudiante existe, actualizar sus datos en la base de datos
+    # Si el curso programado existe, actualizar sus datos en la base de datos
     cursor.execute("UPDATE cursos_maestros SET id_curso=:1, WHERE id_curso =:2 and id_maestro=:3",
                    (CT.id_course, course_id, teacher_id))
     conn.commit()
     conn.close()
-    return {"message": "id_course updated successfully"}
+    return {"message": "Curso programado actualizado"}
 
 
-# Delete courses_teachers
+# Eliminar el curso programado
 @router.delete("/{courses_teachers_id}")
 async def delete_courses_teachers(course_id: int, teacher_id:int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Consultar si existe el estudiante con el ID proporcionado
+    # Consultar si existe el curso programado
     cursor.execute("SELECT id_curso, id_maestro FROM cursos_maestros WHERE id_curso=:1 and id_maestro=:2", (course_id, teacher_id,))
     result = cursor.fetchone()
 
-    # Si no se encuentra el estudiante, retornar un mensaje de error
+    # Si no encuentra el curso programado con la asignacion del profesor
     if not result:
         conn.close()
-        return {"error": "course_id, teacher_id not found"}
+        return {"error": "Curso programado con el profesor digitado no encontrado"}
 
     # Si el estudiante existe, eliminarlo de la base de datos
     cursor.execute("DELETE FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (course_id, teacher_id,))
     conn.commit()
     conn.close()
-    return {"message": "course_id, teacher_id deleted successfully"}
+    return {"message": "Curso programado eliminado"}
 
