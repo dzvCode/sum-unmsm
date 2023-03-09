@@ -13,7 +13,7 @@ async def create_school(school: CreateSchool):
                    (school.id, school.name, school.id_facultad))
     conn.commit()
     conn.close()
-    return {"message": "School created successfully"}
+    return {"message": "Escuela creada exitosamente"}
 
 
 # Read all schools
@@ -43,14 +43,14 @@ async def update_school(school_id: int, school: SchoolUpdate):
     # Si no se encuentra la escuela, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "School not found"}
+        return {"error": "Escuela no encontrada"}
 
     # Si la escuela existe, actualizar sus datos en la base de datos
     cursor.execute("UPDATE escuelas SET nombre=:1 WHERE id_escuela=:2",
                    (school.name, school_id))
     conn.commit()
     conn.close()
-    return {"message": "School updated successfully"}
+    return {"message": "Escuela actualizada exitosamente"}
 
 # Delete school
 @router.delete("/{school_id}")
@@ -64,10 +64,10 @@ async def delete_school(school_id: int):
     # Si no se encuentra el escuela, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "School not found"}
+        return {"error": "Escuela no encontrada"}
 
     # Si el escuela existe, eliminarlo de la base de datos
     cursor.execute("DELETE FROM escuelas WHERE id_escuela=:1", (school_id,))
     conn.commit()
     conn.close()
-    return {"message": "School deleted successfully"}
+    return {"message": "Escuela eliminada exitosamente"}

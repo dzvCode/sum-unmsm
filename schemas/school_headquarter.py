@@ -8,3 +8,6 @@ class SHR(BaseModel):
 class SHRUpdate(BaseModel):
     id_headquarter: int
     
+class VW_SHR(BaseModel):
+    school: str
+    headquarter: str

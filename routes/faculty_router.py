@@ -13,7 +13,7 @@ async def create_faculty(faculty: CreateFaculty):
                    (faculty.id, faculty.name, faculty.id_area))
     conn.commit()
     conn.close()
-    return {"message": "Faculty created successfully"}
+    return {"message": "Facultad creada exitosamente"}
 
 
 # Read all faculties
@@ -43,14 +43,14 @@ async def update_faculty(faculty_id: int, faculty: FacultyUpdate):
     # Si no se encuentra la facultad, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "Faculty not found"}
+        return {"error": "Facultad no encontrada"}
 
     # Si la facultad existe, actualizar sus datos en la base de datos
     cursor.execute("UPDATE facultades SET nombre=:1 WHERE id_facultad=:2",
                    (faculty.name, faculty_id))
     conn.commit()
     conn.close()
-    return {"message": "Faculty updated successfully"}
+    return {"message": "Facultad actualizada exitosamente"}
 
 # Delete faculty
 @router.delete("/{faculty_id}")
@@ -64,11 +64,11 @@ async def delete_faculty(faculty_id: int):
     # Si no se encuentra el facultad, retornar un mensaje de error
     if not result:
         conn.close()
-        return {"error": "Faculty not found"}
+        return {"error": "Facultad no encontrada"}
 
     # Si el facultad existe, eliminarlo de la base de datos
     cursor.execute("DELETE FROM facultades WHERE id_facultad=:1", (faculty_id,))
     conn.commit()
     conn.close()
 
-    return {"message": "Faculty deleted successfully"}
+    return {"message": "Facultad eliminada exitosamente"}

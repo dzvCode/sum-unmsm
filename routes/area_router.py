@@ -13,7 +13,7 @@ async def create_area(areas: CreateArea):
                    (areas.id, areas.name))
     conn.commit()
     conn.close()
-    return {"message": "School created successfully"}
+    return {"message": "Area creada exitosamente"}
 
 
 # Read all areas
@@ -41,14 +41,14 @@ async def update_area(area_id: int, areas: AreaUpdate):
 
     # Si no se encuentra la escuela, retornar un mensaje de error
     if not result:
-        return {"error": "Area not found"}
+        return {"error": "Area no encontrada"}
 
     # Si la escuela existe, actualizar sus datos en la base de datos
     cursor.execute("UPDATE areas SET nombre=:1 WHERE id_area=:2",
                    (areas.name, area_id))
     conn.commit()
     conn.close()
-    return {"message": "Area updated successfully"}
+    return {"message": "Area actualizada exitosamente"}
 
 # Delete area
 @router.delete("/{area_id}")
@@ -61,10 +61,10 @@ async def delete_area(area_id: int):
 
     # Si no se encuentra el area, retornar un mensaje de error
     if not result:
-        return {"error": "Area not found"}
+        return {"error": "Area no encontrada"}
 
     # Si el area existe, eliminarlo de la base de datos
     cursor.execute("DELETE FROM areas WHERE id_area=:1", (area_id,))
     conn.commit()
     conn.close()
-    return {"message": "Area deleted successfully"}
+    return {"message": "Area actualizada exitosamente"}

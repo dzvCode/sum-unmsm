@@ -46,6 +46,7 @@ async def read_courses_ids():
     conn.close()
     return courses_teachers
 
+
 @router.get("/{get_teacher}")
 async def read_eachers_ids(id_course: str):
     conn = get_db_connection()
@@ -59,6 +60,7 @@ async def read_eachers_ids(id_course: str):
     print(courses_teachers)
     conn.close()
     return courses_teachers
+
 
 # Actualizar una programacion de cursos
 @router.put("/{courses_teachers_id}")
@@ -74,12 +76,14 @@ async def update_courses_teachers(teacher_id: int, course_id:int, CT: CTUpdate):
         conn.close()
         return {"error": "Curso programado con el profesor digitado no encontrado"}
 
+
     # Si el curso programado existe, actualizar sus datos en la base de datos
     cursor.execute("UPDATE cursos_maestros SET id_curso=:1, WHERE id_curso =:2 and id_maestro=:3",
                    (CT.id_course, course_id, teacher_id))
     conn.commit()
     conn.close()
     return {"message": "Curso programado actualizado"}
+
 
 
 # Eliminar el curso programado
@@ -96,9 +100,11 @@ async def delete_courses_teachers(course_id: int, teacher_id:int):
         conn.close()
         return {"error": "Curso programado con el profesor digitado no encontrado"}
 
+
     # Si el estudiante existe, eliminarlo de la base de datos
     cursor.execute("DELETE FROM cursos_maestros WHERE id_maestro=:1 and id_curso=:2", (course_id, teacher_id,))
     conn.commit()
     conn.close()
     return {"message": "Curso programado eliminado"}
+
 
