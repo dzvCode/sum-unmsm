@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 
-from schemas.courses_teachers import CT, CTGetTeacher, CTUpdate, VWProgrammingCourses
+from schemas.courses_teachers import CT, CTGetCourse, CTGetTeacher, CTUpdate, VWProgrammingCourses
 
 router = APIRouter()
 
@@ -10,8 +10,7 @@ router = APIRouter()
 async def create_courses_teachers(CT: CT):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO cursos_maestros (id_curso, id_maestro) VALUES (:1, :2)",
-                   (CT.course, CT.id_teacher))
+    cursor.callproc("PKG_CURSOS_MAESTROS.SP_INSERTAR_CURSO_MAESTRO", [CT.id_course, CT.id_teacher, CT.section])
     conn.commit()
     conn.close()
     return {"message": "courses_teachers created successfully"}
@@ -57,7 +56,6 @@ async def read_eachers_ids(id_course: str):
     for result in results:
         course_teacher =  CTGetTeacher(id_teacher=result[0])
         courses_teachers.append(course_teacher)
-    print(courses_teachers)
     conn.close()
     return courses_teachers
 
@@ -107,4 +105,16 @@ async def delete_courses_teachers(course_id: int, teacher_id:int):
     conn.close()
     return {"message": "Curso programado eliminado"}
 
-
+# Obtener los cursos
+@router.get("/cursos")
+async def get_cursos():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT COD_CURSO, CURSO FROM VW_PROGRAMACION_CURSOS")
+    results = cursor.fetchall()
+    courses = []
+    for result in results:
+        course = CTGetCourse(cod_course=result[0], course=result[1])
+        courses.append(course)
+    conn.close()
+    return courses

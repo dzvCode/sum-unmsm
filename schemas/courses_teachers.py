@@ -19,6 +19,10 @@ class VWProgrammingCourses(BaseModel):
     cod_teacher: int
     teacher: str
     cycle: int
+
+class CTGetCourse(BaseModel):
+    cod_course: str
+    course: str
   
 
 
