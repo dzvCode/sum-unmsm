@@ -7,6 +7,18 @@ class CT(BaseModel):
 
 class CTUpdate(BaseModel):
     id_course: str
+
+class CTGetTeacher(BaseModel):
+    id_teacher: int
+
+class VWProgrammingCourses(BaseModel):
+    cod_course: str
+    course: str
+    credits: int
+    section: int
+    cod_teacher: int
+    teacher: str
+    cycle: int
   
 
 

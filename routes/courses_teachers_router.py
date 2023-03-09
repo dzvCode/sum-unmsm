@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 
-from schemas.courses_teachers import CT, CTUpdate
+from schemas.courses_teachers import CT, CTGetTeacher, CTUpdate, VWProgrammingCourses
 
 router = APIRouter()
 
@@ -22,19 +22,18 @@ async def create_courses_teachers(CT: CT):
 async def read_courses_teachers():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id_curso, id_maestro, seccion FROM cursos_maestros")
+    cursor.execute("SELECT cod_curso, curso, creditos, seccion, cod_maestro, profesor, ciclo FROM vw_programacion_cursos")
     results = cursor.fetchall()
     courses_teachers = []
     for result in results:
-        course_teacher =  CT(id_course=result[0], id_teacher=result[1], section=result[2])
+        course_teacher =  VWProgrammingCourses(cod_course=result[0], course=result[1], credits=result[2], section=result[3], cod_teacher=result[4], teacher=result[5], cycle=result[6])
         courses_teachers.append(course_teacher)
-    
     conn.close()
     return courses_teachers
 
 # Obtener los codigos de los cursos distintos
 @router.get("/get_courses")
-async def read_courses_teachers_ids():
+async def read_courses_ids():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT DISTINCT id_curso FROM cursos_maestros")
@@ -42,6 +41,20 @@ async def read_courses_teachers_ids():
     courses_teachers = []
     for result in results:
         course_teacher =  CTUpdate(id_course=result[0])
+        courses_teachers.append(course_teacher)
+    print(courses_teachers)
+    conn.close()
+    return courses_teachers
+
+@router.get("/{get_teacher}")
+async def read_eachers_ids(id_course: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_maestro FROM cursos_maestros WHERE id_curso=:1", [id_course])
+    results = cursor.fetchall()
+    courses_teachers = []
+    for result in results:
+        course_teacher =  CTGetTeacher(id_teacher=result[0])
         courses_teachers.append(course_teacher)
     print(courses_teachers)
     conn.close()
