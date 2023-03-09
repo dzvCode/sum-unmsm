@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from database.connection import get_db_connection
 from datetime import datetime
-from schemas.tuition import Tuition, TuitionCreate,  TuitionUpdateScore,  VW_TuitionAll, VW_TuitionID
+from schemas.tuition import Tuition, TuitionCreate, TuitionDelete,  TuitionUpdateScore,  VW_TuitionAll, VW_TuitionID
 
 router = APIRouter()
 
@@ -67,12 +67,12 @@ async def update_courses_teachers(student_id:int, course_id: str, Tuition: Tuiti
 
 
 # Delete Tuitions
-@router.delete("/{Delete_Tuition_ByIdStudent_IdCourse}")
-async def delete_tuition(student_id:int, course_id: str):
+@router.delete("/")
+async def delete_tuition(Tuition: TuitionDelete):
     conn = get_db_connection()
     cursor = conn.cursor()
     # Consultar si existe el estudiante con el ID proporcionado
-    cursor.execute("SELECT id_curso, id_estudiante FROM matriculas WHERE id_estudiante = :1 AND id_curso = :2", (student_id, course_id))
+    cursor.execute("SELECT id_curso, id_estudiante FROM matriculas WHERE id_estudiante = :1 AND id_curso = :2", (Tuition.id_student, Tuition.id_course))
     result = cursor.fetchone()
 
     # Si no se encuentra el estudiante, retornar un mensaje de error
@@ -81,8 +81,8 @@ async def delete_tuition(student_id:int, course_id: str):
         return {"error": "Matricula del curso no encontrada"}
 
     # Si el estudiante existe, eliminarlo de la base de datos
-    cursor.execute("DELETE FROM matriculas WHERE id_estudiante=:1 and id_curso =:2", (student_id, course_id))
+    cursor.callproc("PKG_MATRICULAS.SP_ANULAR_MATRICULA", [Tuition.id_student, Tuition.id_course])
     conn.commit()
     conn.close()
 
-    return {"message": "Matricula al curso con codigo "+course_id+" del alumno con codigo "+str(student_id)+" eliminada"}
+    return {"message": "Matricula al curso con codigo "+Tuition.id_course+" del alumno con codigo "+str(Tuition.id_student)+" eliminada"}

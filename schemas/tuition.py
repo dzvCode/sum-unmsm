@@ -37,3 +37,6 @@ class TuitionUpdateScore(BaseModel):
     score: int
     
 
+class TuitionDelete(BaseModel):
+    id_student: int
+    id_course: str
