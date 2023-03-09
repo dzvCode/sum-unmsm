@@ -31,16 +31,50 @@ async def read_courses_teachers():
     conn.close()
     return courses_teachers
 
+# Obtener los cursos
+@router.get("/cursos")
+async def get_cursos():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT DISTINCT cod_curso, curso FROM vw_programacion_cursos"
+    result = cursor.execute(query)
+    cursos = [{"cod_curso": row[0], "curso": row[1]} for row in result.fetchall()]
+    conn.close()
+    return {"cursos": cursos}
+
+# Obtener los profesores que enseñan un curso
+@router.get("/profesores")
+async def get_profesores(cod_curso: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT DISTINCT cod_maestro, profesor FROM vw_programacion_cursos WHERE cod_curso = :cod_curso"
+    result = cursor.execute(query, {"cod_curso": cod_curso})
+    profesores = [{"cod_maestro": row[0], "profesor": row[1]} for row in result.fetchall()]
+    conn.close()
+    return {"profesores": profesores}
+
+
+# Obtener las secciones de un curso impartido por un profesor
+@router.get("/secciones")
+async def get_secciones(cod_curso: str, cod_maestro: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT DISTINCT seccion FROM vw_programacion_cursos WHERE cod_curso = :cod_curso AND cod_maestro = :cod_maestro"
+    result = cursor.execute(query, {"cod_curso": cod_curso, "cod_maestro": cod_maestro})
+    secciones = [row[0] for row in result.fetchall()]
+    conn.close()
+    return {"secciones": secciones}
+
 # Obtener los codigos de los cursos distintos
-@router.get("/get_courses")
+@router.get("/get_data_courses")
 async def read_courses_ids():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT id_curso FROM cursos_maestros")
+    cursor.execute("SELECT m.id_maestro, m.nombre_completo, c.id_curso, c.nombre, pc.creditos, pc.seccion, pc.ciclo FROM vw_programacion_cursos pc JOIN maestros m ON pc.cod_maestro = m.id_maestro JOIN cursos c ON pc.cod_curso = c.id_curso")
     results = cursor.fetchall()
     courses_teachers = []
     for result in results:
-        course_teacher =  CTUpdate(id_course=result[0])
+        course_teacher =  VWProgrammingCourses(cod_teacher=result[0], teacher=result[1], cod_course=result[2], course=result[3], credits=result[4], section=result[5], cycle=result[6])
         courses_teachers.append(course_teacher)
     print(courses_teachers)
     conn.close()
@@ -101,4 +135,3 @@ async def delete_courses_teachers(course_id: int, teacher_id:int):
     conn.commit()
     conn.close()
     return {"message": "Curso programado eliminado"}
-
